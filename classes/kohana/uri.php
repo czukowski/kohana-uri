@@ -222,14 +222,12 @@ class Kohana_URI
 	{
 		// XXX: `http_build_url()` belongs to PECL library, not necessarily available...
 
-		// XXX: using `str_replace()` to unquote `&` character... need better way...
-
 		return ($parts['scheme'] ? $parts['scheme'].'://' : '')
 			.(($parts['user'] OR $parts['pass']) ? $parts['user'].':'.$parts['pass'].'@' : '')
 			.($parts['host'] ? $parts['host'] : '')
 			.($parts['port'] ? ':'.$parts['port'] : '')
 			.(($parts['path'] AND (strpos($parts['path'], '/') !== 0 AND ($parts['host'] OR $parts['port']))) ? '/' : '').$parts['path']
-			.($parts['query'] ? '?'.str_replace('&amp;', '&', http_build_query($parts['query'])) : '')
+			.($parts['query'] ? '?'.http_build_query($parts['query'], NULL, '&') : '')
 			.($parts['fragment'] ? '#'.$parts['fragment'] : '');
 	}
 }
