@@ -64,7 +64,7 @@ class Kohana_URI
 	}
 
 	/**
-	 * Erases URI part.
+	 * URI parts eraser.
 	 *
 	 * @param   string  $part
 	 * @param   mixed   $key
@@ -72,6 +72,9 @@ class Kohana_URI
 	 */
 	public function erase($part, $key = NULL)
 	{
+		// XXX: should we add a check to prevent invalid part names?
+		// i.e. `in_array($part, URI::$_part_names)`
+
 		$this->_parse_parts();
 		if ($part === 'query' AND $key !== NULL)
 		{
@@ -98,6 +101,9 @@ class Kohana_URI
 	 */
 	public function get($part, $key = NULL)
 	{
+		// XXX: should we add a check to prevent invalid part names?
+		// i.e. `in_array($part, URI::$_part_names)`
+
 		$this->_parse_parts();
 		if ($part === 'query' AND $key !== NULL)
 		{
@@ -121,6 +127,9 @@ class Kohana_URI
 	 */
 	public function set($part, $key = NULL, $value = NULL)
 	{
+		// XXX: should we add a check to prevent invalid part names?
+		// i.e. `in_array($part, URI::$_part_names)`
+
 		$this->_parse_parts();
 		if ($part === 'query' AND ! is_array($key))
 		{
@@ -177,7 +186,8 @@ class Kohana_URI
 	 */
 	public static function parse($uri)
 	{
-		// XXX: parse_url might be a better choise, need benchmarks...
+		// XXX: `parse_url()` might be a better choise, need benchmarks...
+
 		// Parse URI string
 		preg_match('/^(?:(\w+):)?(?:\/\/(?:(?:([^:@\/]*):?([^:@\/]*))?@)?([^:\/?#]*)(?::(\d*))?)?([^?#]*)(?:\?([^#]*))?(?:#(.*))?/', $uri, $parts);
 
@@ -210,13 +220,16 @@ class Kohana_URI
 	 */
 	public static function render(array $parts)
 	{
-		// XXX: http_build_url is a PECL library, not necessarily available...
+		// XXX: `http_build_url()` belongs to PECL library, not necessarily available...
+
+		// XXX: using `str_replace()` to unquote `&` character... need better way...
+
 		return ($parts['scheme'] ? $parts['scheme'].'://' : '')
 			.(($parts['user'] OR $parts['pass']) ? $parts['user'].':'.$parts['pass'].'@' : '')
 			.($parts['host'] ? $parts['host'] : '')
 			.($parts['port'] ? ':'.$parts['port'] : '')
 			.(($parts['path'] AND (strpos($parts['path'], '/') !== 0 AND ($parts['host'] OR $parts['port']))) ? '/' : '').$parts['path']
-			.($parts['query'] ? '?'.http_build_query($parts['query']) : '')
+			.($parts['query'] ? '?'.str_replace('&amp;', '&', http_build_query($parts['query'])) : '')
 			.($parts['fragment'] ? '#'.$parts['fragment'] : '');
 	}
 }
