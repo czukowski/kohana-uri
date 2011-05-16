@@ -135,5 +135,14 @@ class Kohana_URITest extends Unittest_TestCase
 
 		$uri->erase('port');
 		$this->assertEquals( (string) $uri, 'https://example.com/download/123/file.txt');
+
+		$uri->set('query', array('foo' => 'bar'));
+		$this->assertEquals( (string) $uri, 'https://example.com/download/123/file.txt?foo=bar');
+
+		$uri->set('query', 'boo', 'far');
+		$this->assertEquals( (string) $uri, 'https://example.com/download/123/file.txt?foo=bar&boo=far');
+
+		$uri->set('query', array('foo' => 'bar'));
+		$this->assertEquals( (string) $uri, 'https://example.com/download/123/file.txt?foo=bar');
 	}
 }
