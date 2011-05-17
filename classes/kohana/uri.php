@@ -25,13 +25,12 @@ class Kohana_URI
 	 * Class constructor
 	 * 
 	 * @param mixed $uri
-	 * @param array $parameters
 	 */
-	public function __construct($uri = NULL, $parameters = array())
+	public function __construct($uri = NULL)
 	{
-		if ($uri === NULL)
+		if (is_array($uri))
 		{
-			// TODO: something
+			$this->_parts = $uri;
 		}
 		else
 		{
