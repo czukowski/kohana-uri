@@ -78,6 +78,34 @@ class Kohana_URITest extends Unittest_TestCase
 					'fragment' => 'fact',
 				),
 			),
+			array(
+				'/kohana/index.php/my/site/page:5',
+				array(
+					'uri' => '/kohana/index.php/my/site/page:5',
+					'scheme' => NULL,
+					'user' => NULL,
+					'pass' => NULL,
+					'host' => NULL,
+					'port' => NULL,
+					'path' => '/kohana/index.php/my/site/page:5',
+					'query' => NULL,
+					'fragment' => NULL,
+				),
+			),
+			array(
+				'http://example.com/kohana/index.php/my/site/page:5',
+				array(
+					'uri' => 'http://example.com/kohana/index.php/my/site/page:5',
+					'scheme' => 'http',
+					'user' => NULL,
+					'pass' => NULL,
+					'host' => 'example.com',
+					'port' => NULL,
+					'path' => '/kohana/index.php/my/site/page:5',
+					'query' => NULL,
+					'fragment' => NULL,
+				),
+			),
 		);
 	}
 
@@ -87,7 +115,15 @@ class Kohana_URITest extends Unittest_TestCase
 	public function test_parse($uri, $expected)
 	{
 		$parsed = URI::parse($uri);
-	//	echo Debug::vars($parsed, $expected);
+		$this->assertSame($expected, $parsed);
+	}
+
+	/**
+	 * @dataProvider provider_uri
+	 */
+	public function test_parse_url($uri, $expected)
+	{
+		$parsed = URI::parse_url($uri);
 		$this->assertSame($expected, $parsed);
 	}
 
