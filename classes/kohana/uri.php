@@ -24,12 +24,13 @@ class Kohana_URI
 	/**
 	 * Class constructor
 	 * 
-	 * @param mixed $uri
+	 * @param  mixed  $uri
 	 */
 	public function __construct($uri = NULL)
 	{
 		if (is_array($uri))
 		{
+			// $uri parameter is array, assume it's URI parts
 			$this->_parts = $uri;
 		}
 		else
@@ -42,7 +43,7 @@ class Kohana_URI
 	/**
 	 * Implicit conversion to string
 	 * 
-	 * @return string
+	 * @return  string
 	 */
 	public function __toString()
 	{
@@ -176,9 +177,9 @@ class Kohana_URI
 	/**
 	 * URI class factory.
 	 * 
-	 * @param mixed $uri
-	 * @param array $parameters
-	 * @return URI
+	 * @param   mixed  $uri
+	 * @param   array  $parameters
+	 * @return  URI
 	 */
 	public static function factory($uri = NULL, $parameters = array())
 	{
