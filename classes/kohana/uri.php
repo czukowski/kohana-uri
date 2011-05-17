@@ -9,13 +9,17 @@
 class Kohana_URI
 {
 	/**
+	 * @var array   stores URI parts, when parsed
+	 */
+	protected $_parts = array();
+	/**
 	 * @var string  stores raw URI, if available, until parsed
 	 */
 	protected $_raw_uri = NULL;
 	/**
-	 * @var array   stores URI parts, when parsed
+	 * @var bool    flag
 	 */
-	protected $_parts = array();
+	protected $_parse_flag = FALSE;
 
 	/**
 	 * Class constructor
@@ -43,12 +47,17 @@ class Kohana_URI
 	 */
 	public function __toString()
 	{
-		if ($this->_raw_uri !== NULL)
+		if ($this->_parse_flag === TRUE)
+		{
+			$this->_parse_parts();
+		}
+		elseif ($this->_raw_uri !== NULL)
 		{
 			// Raw URI has been set and was not altered, return it
 			return $this->_raw_uri;
 		}
-		elseif ($this->_parts['uri'] === NULL)
+
+		if ($this->_parts['uri'] === NULL)
 		{
 			// There's no valid cached string representation, must render it
 			$this->_parts['uri'] = URI::render($this->_parts);
@@ -139,8 +148,9 @@ class Kohana_URI
 			// Set all query parameters or any other data
 			$this->_parts[$part] = $key;
 		}
-		// Reset raw URI and 'uri' part
+		// Reset 'uri' part and set parse flag
 		$this->_parts['uri'] = NULL;
+		$this->_parse_flag = TRUE;
 
 		return $this;
 	}
