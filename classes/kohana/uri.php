@@ -29,12 +29,6 @@ class Kohana_URI
 		{
 			// TODO: something
 		}
-		elseif ($uri instanceof Route)
-		{
-			// $uri parameter is a Route instance
-			// XXX: is that really needed here? Could as well do `new URI($route->uri( ... ))`
-			$this->_raw_uri = $uri->uri($parameters);
-		}
 		else
 		{
 			// $uri parameter is a string, save it as is.
