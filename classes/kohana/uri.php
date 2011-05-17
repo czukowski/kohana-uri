@@ -178,12 +178,11 @@ class Kohana_URI
 	 * URI class factory.
 	 * 
 	 * @param   mixed  $uri
-	 * @param   array  $parameters
 	 * @return  URI
 	 */
-	public static function factory($uri = NULL, $parameters = array())
+	public static function factory($uri = NULL)
 	{
-		return new URI($uri, $parameters);
+		return new URI($uri);
 	}
 
 	/**
