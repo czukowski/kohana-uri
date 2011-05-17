@@ -220,6 +220,45 @@ class Kohana_URI
 	}
 
 	/**
+	 * Parses string into URI parts array.
+	 *
+	 * @param   string  $uri
+	 * @return  array
+	 */
+	public static function parse_url($uri)
+	{
+		$parts = parse_url($uri);
+
+		// Combine matches with names to get associative array
+		$parts = array_merge(array_combine(URI::$_part_names, array_pad(array(), count(URI::$_part_names), NULL)), $parts);
+
+		// Replace empty matches with NULL values
+		foreach ($parts as $part => $value)
+		{
+			if ($value === '')
+			{
+				$parts[$part] = NULL;
+			}
+		}
+
+		// Parse query string
+		if ($parts['query'] !== NULL)
+		{
+			parse_str($parts['query'], $parts['query']);
+		}
+
+		// Parse query string
+		if ($parts['port'] !== NULL)
+		{
+			$parts['port'] = (string) $parts['port'];
+		}
+
+		$parts['uri'] = $uri;
+
+		return $parts;
+	}
+
+	/**
 	 * Joins URI parts into a string
 	 *
 	 * @param   array   $parts
