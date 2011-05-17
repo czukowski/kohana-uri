@@ -124,7 +124,6 @@ class Kohana_URI
 		// XXX: should we add a check to prevent invalid part names?
 		// i.e. `in_array($part, URI::$_part_names)`
 
-		$this->_parse_parts();
 		if ($part === 'query' AND ! is_array($key))
 		{
 			// Set a single query parameter
