@@ -117,10 +117,10 @@ class Kohana_URITest extends Unittest_TestCase
 		$route->defaults(array(
 			'action' => 'download',
 		));
-		$uri = URI::factory($route, array(
+		$uri = URI::factory($route->uri(array(
 			'id' => '123',
 			'filename' => 'file.txt',
-		));
+		)));
 
 		$this->assertEquals( (string) $uri, 'download/123/file.txt');
 
