@@ -9,6 +9,10 @@
 class Kohana_URI
 {
 	/**
+	 * @var string  flag to determine, whether the path is absolute
+	 */
+	protected $_is_absolute = NULL;
+	/**
 	 * @var array   stores URI parts, when parsed
 	 */
 	protected $_parts = array();
@@ -126,6 +130,14 @@ class Kohana_URI
 	}
 
 	/**
+	 * @return  boolean
+	 */
+	public function is_absolute()
+	{
+		return $this->_is_absolute;
+	}
+
+	/**
 	 * URI parts setter.
 	 *
 	 * @param   string  $part   URI part to set
@@ -153,6 +165,62 @@ class Kohana_URI
 		$this->_parse_flag = TRUE;
 
 		return $this;
+	}
+
+	/**
+	 * Changes relative URI to absolute
+	 * 
+	 * @param   mixed  $base
+	 * @return  URI
+	 */
+	public function to_absolute($base = NULL)
+	{
+		if ( ! $this->is_absolute())
+		{
+			$this->set('path', UTF8::rtrim($this->_get_base($base), '/').'/'.UTF8::ltrim($this->get('path'), '/'));
+			$this->_is_absolute = TRUE;
+		}
+		return $this;
+	}
+
+	/**
+	 * Changes absolute URI to relative
+	 * 
+	 * @param   mixed  $base
+	 * @return  URI
+	 */
+	public function to_relative($base = NULL)
+	{
+		if ($this->is_absolute())
+		{
+			$base = $this->_get_base($base);
+			$path = $this->get('path');
+			if (UTF8::strpos($path, $base) === 0)
+			{
+				$this->set('path', UTF8::ltrim(UTF8::substr($path, UTF8::strlen($base) + 1)), '/');
+				$this->_is_absolute = FALSE;
+			}
+			else
+			{
+				throw new Kohana_Exception('Absolute URI path does not start with the specified string: :string', array(':string' => $base));
+			}
+		}
+		return $this;
+	}
+
+	/**
+	 * Returns passed parameter, or Kohana base URL with index, if parameter was NULL
+	 * 
+	 * @param   mixed   $base
+	 * @return  string
+	 */
+	protected function _get_base($base = NULL)
+	{
+		if ($base !== NULL)
+		{
+			return $base;
+		}
+		return Kohana::$base_url.Kohana::$index_file;
 	}
 
 	/**
