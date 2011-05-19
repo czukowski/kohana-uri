@@ -140,7 +140,26 @@ class Kohana_URI
 		{
 			// Detect whether the path is absolute
 			$path = $this->_raw_uri === NULL ? Arr::get($this->_parts, 'path') : $this->_raw_uri;
+
+			// Path is absolute if it starts with slash
 			$this->_is_absolute = UTF8::substr($path, 0, 1) === '/';
+
+			if ( ! $this->_is_absolute)
+			{
+				// If it doesn't start with slash, we need to check a few other options
+				if ($this->_raw_uri !== NULL)
+				{
+					// For raw URI we have to parse it and look into parts
+					$this->_is_absolute = NULL;
+					$this->_parse_parts();
+					return $this->is_absolute();
+				}
+				elseif ($this->get('host') !== NULL)
+				{
+					// Consider URIs containing host part absolute too
+					$this->_is_absolute = TRUE;
+				}
+			}
 		}
 		return $this->_is_absolute;
 	}
@@ -171,6 +190,9 @@ class Kohana_URI
 		// Reset 'uri' part and set parse flag
 		$this->_parts['uri'] = NULL;
 		$this->_parse_flag = TRUE;
+
+		// URI might have changed 'absolute' status
+		$this->_is_absolute = NULL;
 
 		return $this;
 	}
@@ -282,7 +304,7 @@ class Kohana_URI
 		{
 			if ($value === '')
 			{
-				$parts[$part] = ($part === 'path' ? '/' : NULL);
+				$parts[$part] = NULL;
 			}
 		}
 
