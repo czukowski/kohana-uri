@@ -134,6 +134,12 @@ class Kohana_URI
 	 */
 	public function is_absolute()
 	{
+		if ($this->_is_absolute === NULL)
+		{
+			// Detect whether the path is absolute
+			$path = $this->_raw_uri === NULL ? Arr::get($this->_parts, 'path') : $this->_raw_uri;
+			$this->_is_absolute = UTF8::substr($path, 0, 1) === '/';
+		}
 		return $this->_is_absolute;
 	}
 
