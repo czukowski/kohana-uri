@@ -130,6 +130,8 @@ class Kohana_URI
 	}
 
 	/**
+	 * Returns cached flag, that indicates, whether the URI path is absolute. Detects the value, if cached value is NULL.
+	 * 
 	 * @return  boolean
 	 */
 	public function is_absolute()
@@ -280,7 +282,7 @@ class Kohana_URI
 		{
 			if ($value === '')
 			{
-				$parts[$part] = NULL;
+				$parts[$part] = ($part === 'path' ? '/' : NULL);
 			}
 		}
 
@@ -311,7 +313,7 @@ class Kohana_URI
 		{
 			if ($value === '')
 			{
-				$parts[$part] = NULL;
+				$parts[$part] = ($part === 'path' ? '/' : NULL);
 			}
 		}
 
