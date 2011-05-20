@@ -177,9 +177,9 @@ class Kohana_URITest extends Unittest_TestCase
 	/**
 	 * @dataProvider provider_uri
 	 */
-	public function test_render($expected, $uri)
+	public function test_render($expected, $uri, $array)
 	{
-		$rendered = URI::render($uri);
+		$rendered = URI::render($uri, $array['is_absolute']);
 		$this->assertSame($expected, $rendered);
 	}
 
@@ -187,7 +187,7 @@ class Kohana_URITest extends Unittest_TestCase
 	 * Tests URI creation from Route object
 	 * @test
 	 */
-	public function test_get_set()
+	public function test_manipulations()
 	{
 		// Set up test route
 		$route = new Route('<action>(/<preview>)/<id>/<filename>',
@@ -206,9 +206,13 @@ class Kohana_URITest extends Unittest_TestCase
 		)));
 
 		$this->assertEquals( (string) $uri, 'download/123/file.txt');
+		$this->assertFalse($uri->is_absolute());
+		$this->assertTrue($uri->is_relative());
 
 		$uri->set('host', 'example.com');
 		$this->assertEquals( (string) $uri, 'example.com/download/123/file.txt');
+		$this->assertTrue($uri->is_absolute());
+		$this->assertFalse($uri->is_relative());
 
 		$uri->set('scheme', 'https');
 		$this->assertEquals( (string) $uri, 'https://example.com/download/123/file.txt');
@@ -227,6 +231,11 @@ class Kohana_URITest extends Unittest_TestCase
 
 		$uri->set('query', array('foo' => 'bar'));
 		$this->assertEquals( (string) $uri, 'https://example.com/download/123/file.txt?foo=bar');
+
+		$uri->to_relative('/');
+		$this->assertEquals($uri->get('path'), 'download/123/file.txt');
+		$this->assertEquals( (string) $uri, 'download/123/file.txt?foo=bar');
+
 	}
 
 	/**
