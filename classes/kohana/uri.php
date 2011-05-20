@@ -227,10 +227,10 @@ class Kohana_URI
 			$path = $this->get('path');
 			if (UTF8::strpos($path, $base) === 0)
 			{
-				$this->set('path', UTF8::ltrim(UTF8::substr($path, UTF8::strlen($base) + 1)), '/');
+				$this->set('path', UTF8::ltrim(UTF8::substr($path, UTF8::strlen($base))), '/');
 				$this->_is_absolute = FALSE;
 			}
-			else
+			elseif ($path)
 			{
 				throw new Kohana_Exception('Absolute URI path does not start with the specified string: :string', array(':string' => $base));
 			}
