@@ -64,7 +64,7 @@ class Kohana_URI
 		if ($this->_parts['uri'] === NULL)
 		{
 			// There's no valid cached string representation, must render it
-			$this->_parts['uri'] = URI::render($this->_parts);
+			$this->_parts['uri'] = URI::render($this->_parts, $this->is_absolute());
 		}
 		// URI has been just rendered OR parsed, but not altered
 		return $this->_parts['uri'];
@@ -165,6 +165,16 @@ class Kohana_URI
 	}
 
 	/**
+	 * Returns whether the URI path is relative.
+	 * 
+	 * @return  boolean
+	 */
+	public function is_relative()
+	{
+		return ! $this->is_absolute();
+	}
+
+	/**
 	 * URI parts setter.
 	 *
 	 * @param   string  $part   URI part to set
@@ -225,6 +235,10 @@ class Kohana_URI
 		{
 			$base = $this->_get_base($base);
 			$path = $this->get('path');
+			if (UTF8::strpos($path, '/') !== 0)
+			{
+				$path = '/'.$path;
+			}
 			if (UTF8::strpos($path, $base) === 0)
 			{
 				$this->set('path', UTF8::ltrim(UTF8::substr($path, UTF8::strlen($base))), '/');
@@ -320,18 +334,18 @@ class Kohana_URI
 	/**
 	 * Joins URI parts into a string
 	 *
-	 * @param   array   $parts
+	 * @param   array    $parts
+	 * @param   boolean  $absolute
 	 * @return  string
 	 */
-	public static function render(array $parts)
+	public static function render(array $parts, $absolute = TRUE)
 	{
-		// XXX: `http_build_url()` belongs to PECL library, not necessarily available...
-
-		return ($parts['scheme'] ? $parts['scheme'].'://' : '')
+		return ($absolute ? ($parts['scheme'] ? $parts['scheme'].'://' : '')
 			.(($parts['user'] OR $parts['pass']) ? $parts['user'].':'.$parts['pass'].'@' : '')
 			.($parts['host'] ? $parts['host'] : '')
 			.($parts['port'] ? ':'.$parts['port'] : '')
-			.(($parts['path'] AND (strpos($parts['path'], '/') !== 0 AND ($parts['host'] OR $parts['port']))) ? '/' : '').$parts['path']
+			.(($parts['path'] AND strpos($parts['path'], '/') !== 0) ? '/' : '') : '')
+			.$parts['path']
 			.($parts['query'] ? '?'.http_build_query($parts['query'], NULL, '&') : '')
 			.($parts['fragment'] ? '#'.$parts['fragment'] : '');
 	}
