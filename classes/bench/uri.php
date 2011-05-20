@@ -31,13 +31,64 @@ class Bench_URI extends Codebench
 		'ftp://example.com/kohana/index.php/route/goes/here?kohana=awesome&life=good#fact',
 	);
 
+	protected static $_part_names = array('uri', 'scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment');
+
 	public function bench_parse_regex($uri)
 	{
-		return URI::parse($uri);
+		// Parse URI string
+		preg_match('/^(?:(\w+):)?(?:\/\/(?:(?:([^:@\/]*):?([^:@\/]*))?@)?([^:\/?#]*)(?::(\d*))?)?([^?#]*)(?:\?([^#]*))?(?:#(.*))?/', $uri, $parts);
+
+		// Combine matches with names to get associative array
+		$parts = array_combine(self::$_part_names, array_pad($parts, count(self::$_part_names), NULL));
+
+		// Replace empty matches with NULL values
+		foreach ($parts as $part => $value)
+		{
+			if ($value === '')
+			{
+				$parts[$part] = NULL;
+			}
+		}
+
+		// Parse query string
+		if ($parts['query'] !== NULL)
+		{
+			parse_str($parts['query'], $parts['query']);
+		}
+
+		return $parts;
 	}
 
 	public function bench_parse_url($uri)
 	{
-		return URI::parse_url($uri);
+		$parts = parse_url($uri);
+
+		// Combine matches with names to get associative array
+		$parts = array_merge(array_combine(self::$_part_names, array_pad(array(), count(self::$_part_names), NULL)), $parts);
+
+		// Replace empty matches with NULL values
+		foreach ($parts as $part => $value)
+		{
+			if ($value === '')
+			{
+				$parts[$part] = ($part === 'path' ? '/' : NULL);
+			}
+		}
+
+		// Parse query string
+		if ($parts['query'] !== NULL)
+		{
+			parse_str($parts['query'], $parts['query']);
+		}
+
+		// Parse query string
+		if ($parts['port'] !== NULL)
+		{
+			$parts['port'] = (string) $parts['port'];
+		}
+
+		$parts['uri'] = $uri;
+
+		return $parts;
 	}
 }
