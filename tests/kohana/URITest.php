@@ -32,6 +32,12 @@ class Kohana_URITest extends Unittest_TestCase
 					'query' => NULL,
 					'fragment' => NULL,
 				),
+				array(
+					'absolute' => '/',
+					'base' => '/kohana/index.php/',
+					'is_absolute' => TRUE,
+					'relative' => '',
+				),
 			),
 			array(
 				'http://username:password@example.com:8080/',
@@ -46,6 +52,12 @@ class Kohana_URITest extends Unittest_TestCase
 					'query' => NULL,
 					'fragment' => NULL,
 				),
+				array(
+					'absolute' => '/',
+					'base' => '/',
+					'is_absolute' => TRUE,
+					'relative' => '',
+				),
 			),
 			array(
 				'http://example.com#blah',
@@ -59,6 +71,12 @@ class Kohana_URITest extends Unittest_TestCase
 					'path' => NULL,
 					'query' => NULL,
 					'fragment' => 'blah',
+				),
+				array(
+					'absolute' => '/',
+					'base' => '/',
+					'is_absolute' => TRUE,
+					'relative' => '',
 				),
 			),
 			array(
@@ -77,6 +95,12 @@ class Kohana_URITest extends Unittest_TestCase
 					),
 					'fragment' => 'fact',
 				),
+				array(
+					'absolute' => '/kohana/index.php/route/goes/here',
+					'base' => '/kohana/index.php/',
+					'is_absolute' => TRUE,
+					'relative' => 'route/goes/here',
+				),
 			),
 			array(
 				'/kohana/index.php/my/site/page:5',
@@ -90,6 +114,32 @@ class Kohana_URITest extends Unittest_TestCase
 					'path' => '/kohana/index.php/my/site/page:5',
 					'query' => NULL,
 					'fragment' => NULL,
+				),
+				array(
+					'absolute' => '/kohana/index.php/my/site/page:5',
+					'base' => '/kohana/index.php/',
+					'is_absolute' => TRUE,
+					'relative' => 'my/site/page:5',
+				),
+			),
+			array(
+				'my/site/page:5',
+				array(
+					'uri' => 'my/site/page:5',
+					'scheme' => NULL,
+					'user' => NULL,
+					'pass' => NULL,
+					'host' => NULL,
+					'port' => NULL,
+					'path' => 'my/site/page:5',
+					'query' => NULL,
+					'fragment' => NULL,
+				),
+				array(
+					'absolute' => '/kohana/index.php/my/site/page:5',
+					'base' => '/kohana/index.php/',
+					'is_absolute' => FALSE,
+					'relative' => 'my/site/page:5',
 				),
 			),
 			array(
@@ -105,6 +155,12 @@ class Kohana_URITest extends Unittest_TestCase
 					'query' => NULL,
 					'fragment' => NULL,
 				),
+				array(
+					'absolute' => '/kohana/index.php/my/site/page:5',
+					'base' => '/kohana/index.php/',
+					'is_absolute' => TRUE,
+					'relative' => 'my/site/page:5',
+				),
 			),
 		);
 	}
@@ -115,15 +171,6 @@ class Kohana_URITest extends Unittest_TestCase
 	public function test_parse($uri, $expected)
 	{
 		$parsed = URI::parse($uri);
-		$this->assertSame($expected, $parsed);
-	}
-
-	/**
-	 * @dataProvider provider_uri
-	 */
-	public function test_parse_url($uri, $expected)
-	{
-		$parsed = URI::parse_url($uri);
 		$this->assertSame($expected, $parsed);
 	}
 
@@ -180,5 +227,41 @@ class Kohana_URITest extends Unittest_TestCase
 
 		$uri->set('query', array('foo' => 'bar'));
 		$this->assertEquals( (string) $uri, 'https://example.com/download/123/file.txt?foo=bar');
+	}
+
+	/**
+	 * Test absolute URI detection
+	 * 
+	 * @dataProvider provider_uri
+	 */
+	public function test_is_absolute($string, $parts, $array)
+	{
+		$this->assertEquals(URI::factory($string)->is_absolute(), $array['is_absolute']);
+		$this->assertEquals(URI::factory($parts)->is_absolute(), $array['is_absolute']);
+	}
+
+	/**
+	 * Test convert URI to absolute/relative and back
+	 * 
+	 * @dataProvider provider_uri
+	 */
+	public function test_absolute_relative($string, $parts, $array)
+	{
+		$uri = URI::factory($string);
+		$base_url = $array['base'];
+
+		for ($i = 0; $i < 2; $i++)
+		{
+			if ($uri->is_absolute())
+			{
+				$uri->to_relative($base_url);
+				$this->assertEquals($uri->get('path'), $array['relative']);
+			}
+			else
+			{
+				$uri->to_absolute($base_url);
+				$this->assertEquals($uri->get('path'), $array['absolute']);
+			}
+		}
 	}
 }
