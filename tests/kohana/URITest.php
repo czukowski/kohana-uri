@@ -33,7 +33,7 @@ class Kohana_URITest extends Unittest_TestCase
 					'fragment' => NULL,
 				),
 				array(
-					'absolute' => '/',
+					'absolute' => '/kohana/index.php/',
 					'base' => '/kohana/index.php/',
 					'is_absolute' => TRUE,
 					'relative' => '',
