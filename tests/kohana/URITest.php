@@ -168,6 +168,20 @@ class Kohana_URITest extends Unittest_TestCase
 	/**
 	 * @dataProvider provider_uri
 	 */
+	public function test_copy($uri)
+	{
+		$original = new URI($uri);
+		$copy = $original->copy();
+		$this->assertNotSame($original, $copy);
+		foreach (array('uri', 'scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment') as $part)
+		{
+			$this->assertEquals($original->get($part), $copy->get($part));
+		}
+	}
+
+	/**
+	 * @dataProvider provider_uri
+	 */
 	public function test_parse($uri, $expected)
 	{
 		$parsed = URI::parse($uri);

@@ -71,6 +71,16 @@ class Kohana_URI
 	}
 
 	/**
+	 * Clones the current object and returns it
+	 * 
+	 * @return  URI
+	 */
+	public function copy()
+	{
+		return clone $this;
+	}
+
+	/**
 	 * URI parts eraser.
 	 *
 	 * @param   string  $part
