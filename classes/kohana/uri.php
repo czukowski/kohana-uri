@@ -342,7 +342,7 @@ class Kohana_URI
 			.(($parts['user'] OR $parts['pass']) ? $parts['user'].':'.$parts['pass'].'@' : '')
 			.($parts['host'] ? $parts['host'] : '')
 			.($parts['port'] ? ':'.$parts['port'] : '')
-			.(($parts['path'] AND strpos($parts['path'], '/') !== 0) ? '/' : '') : '')
+			.(($parts['path'] AND UTF8::strpos($parts['path'], '/') !== 0) ? '/' : '') : '')
 			.$parts['path']
 			.($parts['query'] ? '?'.http_build_query($parts['query'], NULL, '&') : '')
 			.($parts['fragment'] ? '#'.$parts['fragment'] : '');
