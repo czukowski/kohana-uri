@@ -305,8 +305,6 @@ class Kohana_URI
 	 */
 	public static function parse($uri)
 	{
-		// XXX: `parse_url()` might be a better choise, need benchmarks...
-
 		// Parse URI string
 		preg_match('/^(?:(\w+):)?(?:\/\/(?:(?:([^:@\/]*):?([^:@\/]*))?@)?([^:\/?#]*)(?::(\d*))?)?([^?#]*)(?:\?([^#]*))?(?:#(.*))?/', $uri, $parts);
 
