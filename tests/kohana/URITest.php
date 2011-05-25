@@ -13,6 +13,8 @@
  */
 class Kohana_URITest extends Unittest_TestCase
 {
+	protected $_part_names = array('uri', 'scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment');
+
 	/**
 	 * @return array
 	 */
@@ -168,12 +170,26 @@ class Kohana_URITest extends Unittest_TestCase
 	/**
 	 * @dataProvider provider_uri
 	 */
+	public function test_get($uri, $parts)
+	{
+		$instance = new URI($uri);
+		$this->assertSame($instance->get(), $parts);
+		foreach ($this->_part_names as $part)
+		{
+			$instance = new URI($uri);
+			$this->assertEquals($instance->get($part), $parts[$part]);
+		}
+	}
+
+	/**
+	 * @dataProvider provider_uri
+	 */
 	public function test_copy($uri)
 	{
 		$original = new URI($uri);
 		$copy = $original->copy();
 		$this->assertNotSame($original, $copy);
-		foreach (array('uri', 'scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment') as $part)
+		foreach ($this->_part_names as $part)
 		{
 			$this->assertEquals($original->get($part), $copy->get($part));
 		}

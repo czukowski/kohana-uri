@@ -32,6 +32,10 @@ class Kohana_URI
 	 */
 	public function __construct($uri = NULL)
 	{
+		if ($uri instanceof URI)
+		{
+			$this->_parts = $uri->get();
+		}
 		if (is_array($uri))
 		{
 			// $uri parameter is array, assume it's URI parts
@@ -112,22 +116,26 @@ class Kohana_URI
 	/**
 	 * URI parts getter.
 	 *
-	 * @param   string  $part   URI part to get
-	 * @param   mixed   $param  Key or key value pairs to get
+	 * @param   mixed  $part   URI part to get
+	 * @param   mixed  $param  Key or key value pairs to get
 	 * @return  mixed
 	 */
-	public function get($part, $key = NULL)
+	public function get($part = NULL, $key = NULL)
 	{
 		// XXX: should we add a check to prevent invalid part names?
 		// i.e. `in_array($part, URI::$_part_names)`
 
-		// Parse raw URI, if requested part was not set afterwards, not necessary to do this otherwise
-		if ( ! isset($this->_parts[$part]) OR $this->_parts[$part] === NULL)
+		// Parse raw URI, if all parts are requested or requested part was not set afterwards, unnecessary to do this otherwise
+		if ($part === NULL OR ! isset($this->_parts[$part]) OR $this->_parts[$part] === NULL)
 		{
 			$this->_parse_parts();
 		}
 
-		if ($part === 'query' AND $key !== NULL)
+		if ($part === NULL)
+		{
+			return $this->_parts;
+		}
+		elseif ($part === 'query' AND $key !== NULL)
 		{
 			// Return single query key
 			return Arr::get($this->_parts[$part], $key);
